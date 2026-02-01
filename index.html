@@ -346,9 +346,16 @@
 
 <script>
 // ─── Section switcher ───
+let noBtnInitialised = false;
+
 function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  // Initialise No button logic the first time question card is shown
+  if (id === 'question' && !noBtnInitialised) {
+    noBtnInitialised = true;
+    initNoButton();
+  }
 }
 
 // ─── Floating hearts (includes a teddy emoji) ───
@@ -368,9 +375,9 @@ function showSection(id) {
 })();
 
 // ─── No button: click-only, roams the whole .card, never overlaps Yes, gone after 5 clicks ───
-(function () {
+function initNoButton() {
   const noBtn  = document.getElementById('noBtn');
-  const card   = document.querySelector('#question .card');   // ← full card is the boundary
+  const card   = document.querySelector('#question .card');
   const yesBtn = document.getElementById('yesBtn');
   let clicks   = 0;
   const MAX    = 5;
@@ -383,14 +390,12 @@ function showSection(id) {
     "Last chance… think again! 💝"
   ];
 
-  // ── Initial position: right next to Yes, same vertical centre as btn-area ──
+  // ── Initial position: right next to Yes, same vertical centre ──
   requestAnimationFrame(() => {
     const cardRect  = card.getBoundingClientRect();
-    const areaRect  = document.getElementById('btnArea').getBoundingClientRect();
     const yRect     = yesBtn.getBoundingClientRect();
 
-    // Place No button to the right of Yes, vertically aligned with it
-    const initX = (yRect.right - cardRect.left) + 20;          // 20 px gap after Yes
+    const initX = (yRect.right - cardRect.left) + 20;
     const initY = (yRect.top  - cardRect.top)  + (yRect.height - noBtn.offsetHeight) / 2;
     noBtn.style.left = initX + 'px';
     noBtn.style.top  = initY + 'px';
@@ -432,8 +437,8 @@ function showSection(id) {
       const cardH    = card.clientHeight;
       const nW       = noBtn.offsetWidth;
       const nH       = noBtn.offsetHeight;
-      const pad      = 14;                        // inner margin from card edges
-      const bottomGuard = 52;                     // leave room at bottom for funny-msg
+      const pad      = 14;
+      const bottomGuard = 52;
 
       // Yes button rect *relative to card*
       const yRect = yesBtn.getBoundingClientRect();
@@ -452,9 +457,7 @@ function showSection(id) {
         newY = pad + Math.random() * (cardH - nH - pad - bottomGuard);
         tries++;
       } while (tries < 300 && (
-        // reject if overlaps Yes (with margin)
         rectsOverlap(newX, newY, nW, nH, yX - 8, yY - 8, yW + 16, yH + 16) ||
-        // reject if it hasn't moved enough
         (Math.abs(newX - curX) < 60 && Math.abs(newY - curY) < 40)
       ));
 
@@ -464,7 +467,7 @@ function showSection(id) {
   }
 
   noBtn.addEventListener('click', onNo);
-})();
+}
 
 // ─── Yes button ───
 function onYes(e) {
@@ -477,4 +480,10 @@ function onYes(e) {
     sp.style.left = x+'px'; sp.style.top = y+'px';
     const a = Math.random()*Math.PI*2, d = 60+Math.random()*120;
     sp.style.setProperty('--tx', Math.cos(a)*d+'px');
-    sp.s
+    sp.style.setProperty('--ty', Math.sin(a)*d+'px');
+    sp.style.animationDelay = (Math.random()*.18)+'s';
+    document.body.appendChild(sp);
+    setTimeout(() => sp.remove(), 1100);
+  }
+  setTimeout(() => {
+    showSection('yes-scr
