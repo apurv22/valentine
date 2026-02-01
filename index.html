@@ -504,4 +504,33 @@ function spawnPetals() {
     p.style.animationDuration = (4+Math.random()*5)+'s';
     p.style.animationDelay   = (Math.random()*4)+'s';
     p.style.background = cols[Math.floor(Math.random()*cols.length)];
-    
+    const sz = (10+Math.random()*12)+'px';
+    p.style.width = sz; p.style.height = sz;
+    const r = Math.random();
+    p.style.borderRadius = r<.33?'50% 0 50% 50%':r<.66?'0 50% 50% 50%':'50% 50% 0 50%';
+    c.appendChild(p);
+  }
+}
+
+// ─── Confetti burst from top ───
+function spawnConfetti() {
+  const cols = ['#e84a71','#f0d088','#7ec8e3','#f28da5','#a78bfa','#34d399'];
+  for (let i = 0; i < 70; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-particle';
+    el.style.left = (5+Math.random()*90)+'%';
+    el.style.top  = '-12px';
+    el.style.background = cols[Math.floor(Math.random()*cols.length)];
+    el.style.width  = (6+Math.random()*9)+'px';
+    el.style.height = (6+Math.random()*11)+'px';
+    el.style.borderRadius = Math.random()>.5?'50%':'2px';
+    el.style.setProperty('--fall', (window.innerHeight+80)+'px');
+    el.style.setProperty('--spin', (Math.random()*720-360)+'deg');
+    el.style.animationDelay = (Math.random()*1.4)+'s';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+</script>
+</body>
+</html>
