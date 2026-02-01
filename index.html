@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Will You Be My Valentine? 💝</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ─── Reset & Base ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose:      #e84a71;
+    --rose-dark: #c23659;
+    --blush:     #f9d0dc;
+    --cream:     #fff5f7;
+    --gold:      #d4a054;
+    --gold-light:#f0d088;
+    --text:      #5a2d42;
+    --text-light:#8a5070;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* ─── Floating Hearts Background ─── */
+  .hearts-bg {
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none; overflow: hidden;
+  }
+  .heart {
+    position: absolute;
+    bottom: -60px;
+    font-size: 1.4rem;
+    opacity: 0;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+    5%   { opacity: .7; }
+    90%  { opacity: .5; }
+    100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ─── Petal Rain (only on Yes screen) ─── */
+  .petals-container {
+    position: fixed; inset: 0; z-index: 50;
+    pointer-events: none; overflow: hidden;
+    display: none;
+  }
+  .petals-container.active { display: block; }
+  .petal {
+    position: absolute; top: -40px;
+    width: 14px; height: 14px;
+    background: var(--rose);
+    border-radius: 50% 0 50% 50%;
+    opacity: 0;
+    animation: petalFall linear infinite;
+  }
+  @keyframes petalFall {
+    0%   { transform: translateY(0) rotate(0deg) scale(0); opacity: 0; }
+    10%  { opacity: .85; transform: translateY(5vh) rotate(30deg) scale(1); }
+    100% { transform: translateY(110vh) rotate(720deg) scale(.6); opacity: 0; }
+  }
+
+  /* ─── Sections (pages) ─── */
+  .section {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 1;
+    opacity: 0; pointer-events: none;
+    transition: opacity .6s ease;
+  }
+  .section.active { opacity: 1; pointer-events: auto; }
+
+  /* ─── INTRO SECTION ─── */
+  #intro .love-icon {
+    font-size: 5rem;
+    animation: pulse 1.4s ease-in-out infinite;
+    margin-bottom: 12px;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.15); }
+  }
+  #intro h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2rem, 6vw, 3.6rem);
+    color: var(--rose);
+    text-align: center;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 12px rgba(232,74,113,.15);
+  }
+  #intro p {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--text-light);
+    font-size: clamp(.9rem, 2.2vw, 1.1rem);
+    margin-bottom: 36px;
+    text-align: center;
+    padding: 0 24px;
+  }
+  #intro .btn-start {
+    font-family: 'Poppins', sans-serif;
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    padding: 14px 44px;
+    border-radius: 50px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 24px rgba(232,74,113,.35);
+    transition: transform .2s, box-shadow .2s;
+    letter-spacing: .5px;
+  }
+  #intro .btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 32px rgba(232,74,113,.45);
+  }
+
+  /* ─── QUESTION SECTION ─── */
+  #question .card {
+    background: #fff;
+    border-radius: 28px;
+    box-shadow: 0 8px 48px rgba(90,45,66,.12);
+    padding: 48px 36px 40px;
+    max-width: 440px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  #question .card .emoji-row {
+    font-size: 2.2rem;
+    margin-bottom: 18px;
+    letter-spacing: 6px;
+  }
+  #question .card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.35;
+  }
+  #question .card .sub {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(1rem, 2.8vw, 1.25rem);
+    color: var(--rose);
+    margin-bottom: 32px;
+  }
+
+  /* Buttons row */
+  .btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    position: relative;
+    min-height: 56px;
+    align-items: center;
+  }
+
+  .btn-choice {
+    font-family: 'Poppins', sans-serif;
+    border: none;
+    border-radius: 50px;
+    padding: 13px 38px;
+    font-size: .95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    position: relative;
+    z-index: 2;
+    white-space: nowrap;
+  }
+  .btn-yes {
+    background: var(--rose);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(232,74,113,.4);
+  }
+  .btn-yes:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 28px rgba(232,74,113,.5);
+  }
+  .btn-no {
+    background: #eee;
+    color: var(--text-light);
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .btn-no:hover { transform: scale(1.02); }
+
+  /* No-button size grows with each attempt */
+  .btn-yes.grow { transition: transform .18s, box-shadow .2s, font-size .3s, padding .3s; }
+
+  /* ─── Funny message bubble ─── */
+  .funny-msg {
+    position: absolute;
+    bottom: -58px;
+    left: 50%; transform: translateX(-50%);
+    background: var(--blush);
+    color: var(--rose-dark);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: .82rem;
+    padding: 8px 18px;
+    border-radius: 20px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s;
+    z-index: 3;
+  }
+  .funny-msg.show { opacity: 1; }
+
+  /* ─── YES SECTION ─── */
+  #yes-screen {
+    background: linear-gradient(135deg, #fff0f3 0%, #ffe4ec 50%, #fff5f7 100%);
+  }
+  #yes-screen .confetti-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2.2rem, 7vw, 4.2rem);
+    color: var(--rose);
+    text-align: center;
+    line-height: 1.25;
+    text-shadow: 0 2px 16px rgba(232,74,113,.2);
+    margin-bottom: 10px;
+    animation: fadeSlideUp .7s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes fadeSlideUp {
+    from { opacity:0; transform: translateY(30px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  #yes-screen .sub-yes {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--text-light);
+    font-size: clamp(.9rem, 2.3vw, 1.1rem);
+    margin-bottom: 28px;
+    animation: fadeSlideUp .7s .2s cubic-bezier(.22,1,.36,1) both;
+  }
+  #yes-screen .gif-box {
+    animation: fadeSlideUp .7s .4s cubic-bezier(.22,1,.36,1) both;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(232,74,113,.25);
+    max-width: 340px;
+    width: 88%;
+  }
+  #yes-screen .gif-box img {
+    width: 100%;
+    display: block;
+    border-radius: 20px;
+  }
+  /* Fallback if gif fails – a pure-CSS celebratory box */
+  .gif-fallback {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #ffe0ec, #fff0f5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+  }
+  .gif-fallback .big-heart {
+    font-size: 5rem;
+    animation: pulse 1s ease-in-out infinite;
+  }
+  .gif-fallback p {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.4rem;
+    color: var(--rose);
+    margin-top: 10px;
+  }
+
+  /* ─── Sparkle burst on Yes click ─── */
+  .sparkle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    font-size: 1.6rem;
+    animation: sparkleAnim .8s ease-out forwards;
+  }
+  @keyframes sparkleAnim {
+    0%   { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+  }
+
+  /* ─── Decorative border accents ─── */
+  .deco-corner {
+    position: fixed;
+    font-size: 1.8rem;
+    opacity: .18;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .deco-corner.tl { top: 18px; left: 22px; }
+  .deco-corner.tr { top: 18px; right: 22px; transform: scaleX(-1); }
+  .deco-corner.bl { bottom: 18px; left: 22px; transform: scaleY(-1); }
+  .deco-corner.br { bottom: 18px; right: 22px; transform: scale(-1,-1); }
+</style>
+</head>
+<body>
+
+<!-- Decorative corners -->
+<span class="deco-corner tl">🌹</span>
+<span class="deco-corner tr">🌹</span>
+<span class="deco-corner bl">🌹</span>
+<span class="deco-corner br">🌹</span>
+
+<!-- Floating hearts bg layer -->
+<div class="hearts-bg" id="heartsBg"></div>
+
+<!-- Petal rain (shown on Yes) -->
+<div class="petals-container" id="petals"></div>
+
+<!-- ════════ INTRO ════════ -->
+<section class="section active" id="intro">
+  <div class="love-icon">💝</div>
+  <h1>Hey Prachi… 💝<br/>Something Special<br/>is waiting for you…</h1>
+  <p>A little message from someone who loves you very much</p>
+  <button class="btn-start" onclick="showSection('question')">Open My Heart ✨</button>
+</section>
+
+<!-- ════════ QUESTION ════════ -->
+<section class="section" id="question">
+  <div class="card">
+    <div class="emoji-row">🌹 💝 🌹</div>
+    <h2>My Dearest Prachi,<br/>Will you be my Valentine?</h2>
+    <p class="sub">I already know the answer… but say it anyway 😘</p>
+
+    <div class="btn-row" id="btnRow">
+      <button class="btn-choice btn-yes grow" id="yesBtn" onclick="onYes(event)">Yes! 💕</button>
+      <button class="btn-choice btn-no" id="noBtn">No</button>
+      <div class="funny-msg" id="funnyMsg"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ YES SCREEN ════════ -->
+<section class="section" id="yes-screen">
+  <div class="confetti-text">You said YES! 🎉💝</div>
+  <p class="sub-yes">The best decision you'll ever make, Prachi… 💝</p>
+  <div class="gif-box">
+    <!-- Using a fun celebratory gif; fallback CSS box below -->
+    <img
+      src="https://giphy.com/media/v1.Y2lxOTQyNTc3OXRjdGdmd2hkdjQ0MjZhazUyZjhibmR3eGxyZXN3eGtoNGFvcmRyZw/giphy.gif"
+      alt="Best choice ever!"
+      onerror="this.style.display='none';document.querySelector('.gif-fallback').style.display='flex';"
+    />
+    <div class="gif-fallback" style="display:none;">
+      <div class="big-heart">💝</div>
+      <p>You made the best choice of your life!</p>
+    </div>
+  </div>
+</section>
+
+<script>
+// ─── Section switcher ───
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ─── Floating hearts ───
+(function spawnHearts() {
+  const container = document.getElementById('heartsBg');
+  const emojis = ['💝','💖','💗','💓','🌹','❤️','💕','🥀'];
+  for (let i = 0; i < 28; i++) {
+    const h = document.createElement('span');
+    h.className = 'heart';
+    h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    h.style.left = Math.random() * 100 + '%';
+    h.style.animationDuration = (8 + Math.random() * 12) + 's';
+    h.style.animationDelay = (Math.random() * 10) + 's';
+    h.style.fontSize = (.8 + Math.random() * 1.4) + 'rem';
+    container.appendChild(h);
+  }
+})();
+
+// ─── No button evasion ───
+(function setupNoBtn() {
+  const noBtn   = document.getElementById('noBtn');
+  const card    = document.querySelector('.card');
+  const yesBtn  = document.getElementById('yesBtn');
+  let attempts  = 0;
+
+  const funnyMessages = [
+    "Hmm… are you sure? 👀",
+    "Nice try… but I won't let you! 😏",
+    "That button is shy… just like my love for you!",
+    "Oops! Slipped away… try again? 😘",
+    "Haha! You can't catch it!",
+    "The No button has left the chat 💨",
+    "It's hiding because it knows you don't mean it!",
+    "Running away… just like your heart runs to me! 💝",
+    "Good luck catching THAT! 😄",
+    "The No button said 'nah' and left!",
+    "Plot twist: there IS no No button anymore 😉",
+    "Your heart already knows the answer… just click Yes!",
+  ];
+
+  // On mouseenter / touchstart – teleport the No button
+  function evade(e) {
+    e.preventDefault();
+    attempts++;
+    const rect   = card.getBoundingClientRect();
+    const cardW  = rect.width  - noBtn.offsetWidth  - 16;
+    const cardH  = rect.height - noBtn.offsetHeight - 16;
+    let newX, newY, tries = 0;
+
+    // Pick a random spot that's not near current position
+    do {
+      newX = Math.random() * cardW;
+      newY = Math.random() * cardH;
+      tries++;
+    } while (tries < 30 && (
+      Math.abs(newX - noBtn.offsetLeft) < 80 &&
+      Math.abs(newY - noBtn.offsetTop)  < 50
+    ));
+
+    noBtn.style.position = 'absolute';
+    noBtn.style.left     = newX + 'px';
+    noBtn.style.top      = newY + 'px';
+    noBtn.style.margin   = '0';
+
+    // Show funny message
+    const msg = document.getElementById('funnyMsg');
+    msg.textContent = funnyMessages[Math.min(attempts - 1, funnyMessages.length - 1)];
+    msg.classList.add('show');
+    clearTimeout(msg._t);
+    msg._t = setTimeout(() => msg.classList.remove('show'), 1800);
+
+    // Grow the Yes button each time
+    const yesSize = Math.min(1 + attempts * 0.08, 1.7);
+    yesBtn.style.transform = `scale(${yesSize})`;
+
+    // After several attempts, hide No button entirely
+    if (attempts >= 8) {
+      noBtn.style.opacity = '0';
+      noBtn.style.pointerEvents = 'none';
+      const msg2 = document.getElementById('funnyMsg');
+      msg2.textContent = "💝 The only answer is YES… click it!";
+      msg2.classList.add('show');
+    }
+  }
+
+  noBtn.addEventListener('mouseenter', evade);
+  noBtn.addEventListener('touchstart', evade, { passive: false });
+  // Also catch click just in case on fast devices
+  noBtn.addEventListener('click', evade);
+})();
+
+// ─── Yes button ───
+function onYes(e) {
+  // Sparkle burst
+  const x = e.clientX, y = e.clientY;
+  const symbols = ['✨','💖','🌟','💫','❤️','🌹','✨','💝'];
+  for (let i = 0; i < 14; i++) {
+    const sp = document.createElement('span');
+    sp.className = 'sparkle';
+    sp.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    sp.style.left = x + 'px';
+    sp.style.top  = y + 'px';
+    const angle = (Math.random() * Math.PI * 2);
+    const dist  = 60 + Math.random() * 100;
+    sp.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    sp.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+    sp.style.animationDelay = (Math.random() * 0.15) + 's';
+    document.body.appendChild(sp);
+    setTimeout(() => sp.remove(), 1000);
+  }
+
+  // Small delay then show Yes screen + petals
+  setTimeout(() => {
+    showSection('yes-screen');
+    document.getElementById('petals').classList.add('active');
+    spawnPetals();
+  }, 500);
+}
+
+// ─── Petal rain ───
+function spawnPetals() {
+  const container = document.getElementById('petals');
+  const colors = ['#e84a71','#f28da5','#d4335f','#f9a0b8','#e06080','#c9405a'];
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (4 + Math.random() * 5) + 's';
+    p.style.animationDelay = (Math.random() * 4) + 's';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.width = (10 + Math.random() * 12) + 'px';
+    p.style.height = p.style.width;
+    // Randomise the petal shape a bit
+    const r = Math.random();
+    if (r < .33)      p.style.borderRadius = '50% 0 50% 50%';
+    else if (r < .66) p.style.borderRadius = '0 50% 50% 50%';
+    else               p.style.borderRadius = '50% 50% 0 50%';
+    container.appendChild(p);
+  }
+}
+</script>
+</body>
+</html>
